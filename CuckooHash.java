@@ -245,13 +245,49 @@ public class CuckooHash<K, V> {
 	 */
 
  	public void put(K key, V value) {
-
+		int pos1 = hash1(key);
+		int pos2 = hash2(key);
+	
+		// Check if the key with the same value already exists
+		if ((table[pos1] != null && table[pos1].getBucKey().equals(key) && table[pos1].getValue().equals(value)) ||
+			(table[pos2] != null && table[pos2].getBucKey().equals(key) && table[pos2].getValue().equals(value))) {
+			return;
+		}
+	
+		Bucket<K, V> newEntry = new Bucket<>(key, value);
+	
+		for (int i = 0; i < CAPACITY; i++) { // Avoid infinite loops
+			// Try inserting at h1(key)
+			if (table[pos1] == null) {
+				table[pos1] = newEntry;
+				return;
+			}
+	
+			// Evict current entry and replace it with the new entry
+			Bucket<K, V> evicted = table[pos1];
+			table[pos1] = newEntry;
+	
+			// Move evicted entry to its alternate position
+			newEntry = evicted;
+			key = newEntry.getBucKey();
+			value = newEntry.getValue();
+			pos1 = (pos1 == hash1(key)) ? hash2(key) : hash1(key);
+	
+			// Try inserting at the alternate position
+			if (table[pos1] == null) {
+				table[pos1] = newEntry;
+				return;
+			}
+		}
+	
+		// If we reached here, we assume a cycle and must rehash
+		rehash();
+		put(key, value); // Retry insertion after rehashing
+	}
+	
 		// ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE.
 		// Also make sure you read this method's prologue above, it should help
 		// you. Especially the two HINTS in the prologue.
-
-		return;
-	}
 
 
 	/**

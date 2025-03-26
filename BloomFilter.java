@@ -212,15 +212,16 @@ class BloomFilter {
      */
 
     public boolean contains(String s) {
-        if (s == null || noHashes == 0) return false; // Handle edge cases
+        if (s == null || noHashes == 0) return false; // Handle edge cases where input is invalid or no hash functions are set
         for (int i = 0; i < noHashes; i++) {
-            int index = (int) (Math.abs(hashCode(s, i)) & hashMask);
-            if (!data.get(index)) {
-                return false; // If any bit is not set, 's' is definitely not in the set
+            long hash = hashCode(s, i);  // Calculate the hash for the string and the i-th function
+            int index = (int) (hash & hashMask);  // Mask the hash and cast to int
+            if (!data.get(index)) {  // If any bit is not set, 's' is definitely not in the set
+                return false;
             }
         }
-        return true; // If all bits are set, 's' is probably in the set
-    }
+    return true; // If all bits corresponding to the 'k' hash functions are set, 's' is most probably in the set
+}
 
 
     /*********************************
