@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   TUKER MOOSE - COMP 272/400C-002 - Spring 2025
  *
  *   Note, additional comments provided throughout source code is
  *   for educational purposes.
@@ -9,10 +9,6 @@
 
 import java.util.BitSet;
 import java.util.Random;
-import java.util.HashSet;
-import java.util.Set;
-import java.security.SecureRandom;
-import java.lang.Math;
 
 
 /**
@@ -216,15 +212,14 @@ class BloomFilter {
      */
 
     public boolean contains(String s) {
-
-        // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME AT TOP OF FILE
-        //
-        // HINT: the bitmap is the private class variable 'data', and it is
-        // of type BitSet (Java class BitSet). See Oracle documentation for
-        // this class on available methods. You can also see how method 'add'
-        // in this class uses the object.
-
-        return false;
+        if (s == null || noHashes == 0) return false; // Handle edge cases
+        for (int i = 0; i < noHashes; i++) {
+            int index = (int) (Math.abs(hashCode(s, i)) & hashMask);
+            if (!data.get(index)) {
+                return false; // If any bit is not set, 's' is definitely not in the set
+            }
+        }
+        return true; // If all bits are set, 's' is probably in the set
     }
 
 
